@@ -759,15 +759,22 @@ void dfu_set_alternate(struct dfu_ops *ops)
 		break;
 #endif
 #if defined(CONFIG_SPI_FLASH_USER_DATA_PARTITION) && \
-		defined(SPI_USER_DATA_NB_BLOCKS)
+	(defined(SPI_USER_DATA_NB_BLOCKS) || defined(SPI_RAWDATA_COLLECTION_NB_BLOCKS))
 	case USER_DATA_ALT:
 		ops->write = dfu_spi_flash_write;
 		ops->read = dfu_spi_flash_read;
+#if defined(SPI_USER_DATA_NB_BLOCKS)
 		ops->block_count =
 			(SPI_USER_DATA_NB_BLOCKS *
 			 SERIAL_FLASH_BLOCK_SIZE) / PAGE_SIZE;
 		ops->partition_offset = SPI_USER_DATA_START_BLOCK *
 					SERIAL_FLASH_BLOCK_SIZE;
+#elif defined(SPI_RAWDATA_COLLECTION_NB_BLOCKS)
+		ops->block_count = (SPI_RAWDATA_COLLECTION_NB_BLOCKS *
+				 SERIAL_FLASH_BLOCK_SIZE) / PAGE_SIZE;
+		ops->partition_offset = SPI_RAWDATA_COLLECTION_START_BLOCK *
+				SERIAL_FLASH_BLOCK_SIZE;
+#endif
 		break;
 #endif
 #endif
